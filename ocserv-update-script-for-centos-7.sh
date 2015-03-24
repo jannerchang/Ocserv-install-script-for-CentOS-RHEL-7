@@ -1,6 +1,6 @@
 #!/bin/bash
 
-version=${1-0.8.9}
+version=${1-0.10.1}
 filename=ocserv-$version.tar.xz
 dirname=ocserv-$version
 url="ftp://ftp.infradead.org/pub/ocserv/$filename"
