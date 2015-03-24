@@ -36,7 +36,7 @@ function ConfigEnvironmentVariable {
     #最大连接数，默认是16
     maxclients=1024
     #ocserv版本
-    version=${1-0.8.9}
+    version=${1-0.10.1}
     #服务器的证书和key文件，放在本脚本的同目录下，key文件的权限应该是600或者400
     servercert=server-cert.pem
     serverkey=server-key.pem
