@@ -1,88 +1,33 @@
-#!/bin/bash
-
-AUTHOR="Maple"
-VPN="Cisco SG for Maple"
-DOMAIN="miao.hu"
-CLIENT="user"
-
-cd /usr/local/etc/ocserv
-mkdir ca
-cd ca
-
-cat << EOF > ca.tmpl
-cn = "$VPN"
-organization = "$AUTHOR"
-serial = 1
-expiration_days = 1000
-ca
-signing_key
-cert_signing_key
-crl_signing_key
-EOF
-
-cat << EOF > server.tmpl
-cn = "$DOMAIN"
-organization = "$AUTHOR"
-serial = 2
-expiration_days = 1000
-signing_key
-encryption_key
-tls_www_server
-EOF
-
-certtool --generate-privkey --outfile ca-key.pem
-certtool --generate-self-signed --load-privkey ca-key.pem --template ca.tmpl --outfile ca-cert.pem
-certtool --generate-privkey --outfile server-key.pem
-certtool --generate-certificate --load-privkey server-key.pem \
---load-ca-certificate ca-cert.pem --load-ca-privkey ca-key.pem \
---template server.tmpl --outfile server-cert.pem
-
-cat << EOF > user.tmpl
-cn = "$CLIENT"
-serial = 1824
-expiration_days = 1000
-signing_key
-tls_www_client
-EOF
-
-certtool --generate-privkey --outfile user-key.pem
-certtool --generate-certificate --load-privkey user-key.pem --load-ca-certificate ca-cert.pem --load-ca-privkey ca-key.pem --template user.tmpl --outfile user-cert.pem
-openssl pkcs12 -export -clcerts -in user-cert.pem -inkey user-key.pem -out user.p12
-
-cat << EOF > ocserv.conf
-#证书登录
-auth = "certificate"
+cat <<EOF> /usr/local/etc/ocserv/ocserv.conf
+#密码登录
+auth = "plain[/usr/local/etc/ocserv/ocpasswd]"
 max-clients = 1024
-max-same-clients = 16
+max-same-clients = 10
 tcp-port = 10443
 udp-port = 10443
+listen-clear-file = /var/run/ocserv-conn.socket
 keepalive = 32400
 dpd = 90
-mobile-dpd = 1800
 try-mtu-discovery = true
-server-cert = /usr/local/etc/ocserv/ca/server-cert.pem
-server-key = /usr/local/etc/ocserv/ca/server-key.pem
-ca-cert = /usr/local/etc/ocserv/ca/ca-cert.pem
-cert-user-oid = 2.5.4.3
-
-tls-priorities = "NORMAL:%SERVER_PRECEDENCE:%COMPAT:-VERS-SSL3.0"
+server-cert = /usr/local/etc/ocserv/server-cert.pem
+server-key = /usr/local/etc/ocserv/server-key.pem
+tls-priorities = "NORMAL:%SERVER_PRECEDENCE:%COMPAT:-VERS-SSL3.0:-ARCFOUR-128"
 auth-timeout = 40
-min-reauth-time = 120
-cookie-timeout = 300
+cookie-timeout = 86400
 deny-roaming = false
 rekey-time = 172800
 rekey-method = ssl
 use-utmp = true
 use-occtl = true
 pid-file = /var/run/ocserv.pid
+onment (if any)
 socket-file = /var/run/ocserv-socket
 run-as-user = nobody
-run-as-group = daemon
+run-as-group = nobody
 device = vpns
-output-buffer = 23000
-# default-domain = example.com
-ipv4-network = 10.0.1.0
-ipv4-netmask = 255.255.255.0
+predictable-ips = true
+ipv4-network = 192.168.8.0
+ipv4-netmask = 255.255.251.0
 dns = 8.8.8.8
 dns = 8.8.4.4
 ping-leases = false
@@ -190,8 +135,10 @@ no-route = 123.150.52.196/255.255.255.0
 no-route = 123.150.53.156/255.255.255.0
 no-route = 60.165.45.14/255.255.255.0
 no-route = 115.102.0.50/255.255.255.0
+no-route = 115.102.0.50/255.255.255.0
 no-route = 123.58.180.105/255.255.255.0
+no-route = 123.58.180.106/255.255.255.0
 no-route = 222.170.95.35/255.255.255.0
 EOF
 
-cp /usr/local/etc/ocserv/ca/ocserv.conf /usr/local/etc/ocserv/ocserv.conf
+
