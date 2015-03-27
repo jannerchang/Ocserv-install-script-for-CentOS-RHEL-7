@@ -49,7 +49,8 @@ certtool --generate-privkey --outfile user-key.pem
 certtool --generate-certificate --load-privkey user-key.pem --load-ca-certificate ca-cert.pem --load-ca-privkey ca-key.pem --template user.tmpl --outfile user-cert.pem
 openssl pkcs12 -export -clcerts -in user-cert.pem -inkey user-key.pem -out user.p12
 
-cat << EOF > ocserv.conf
+cat << EOF > /usr/local/etc/ocserv/ocserv.conf
+#证书登录
 auth = "certificate"
 max-clients = 1024
 max-same-clients = 16
@@ -192,5 +193,3 @@ no-route = 115.102.0.50/255.255.255.0
 no-route = 123.58.180.105/255.255.255.0
 no-route = 222.170.95.35/255.255.255.0
 EOF
-
-cp /usr/local/etc/ocserv/ca/ocserv.conf /usr/local/etc/ocserv/ocserv.conf
