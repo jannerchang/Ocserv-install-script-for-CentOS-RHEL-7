@@ -26,7 +26,7 @@ fi
 tar axf $filename
 cd $dirname
 
-sed -i 's/define MAX_CONFIG_ENTRIES 64/define MAX_CONFIG_ENTRIES 400/g' src/vpn.h
+sed -i 's/define MAX_CONFIG_ENTRIES 96/define MAX_CONFIG_ENTRIES 400/g' src/vpn.h
 ./configure
 make
 make install
