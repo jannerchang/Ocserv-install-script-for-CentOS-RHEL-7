@@ -36,7 +36,7 @@ function ConfigEnvironmentVariable {
     #最大连接数，默认是16
     maxclients=1024
     #ocserv版本
-    version=${1-0.10.2}
+    version=${1-0.8.9}
     #服务器的证书和key文件，放在本脚本的同目录下，key文件的权限应该是600或者400
     servercert=server-cert.pem
     serverkey=server-key.pem
@@ -140,7 +140,7 @@ function CompileOcserv {
     wget -t 0 -T 60 "ftp://ftp.infradead.org/pub/ocserv/ocserv-$version.tar.xz"
     tar axf ocserv-$version.tar.xz
     cd ocserv-$version
-    sed -i 's/define MAX_CONFIG_ENTRIES 64/define MAX_CONFIG_ENTRIES 400/g' src/vpn.h
+    sed -i 's/define MAX_CONFIG_ENTRIES 96/define MAX_CONFIG_ENTRIES 400/g' src/vpn.h
     ./configure
     make
     make install
